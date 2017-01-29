@@ -1,4 +1,4 @@
-package com.syntactec.subreddify.rest;
+package com.syntactec.subreddify.poller;
 
 import com.google.gson.*;
 
@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedditPostsDeserializer implements JsonDeserializer<List<RedditPost>> {
+class RedditPostsDeserializer implements JsonDeserializer<List<RedditPost>> {
     @Override
     public List<RedditPost> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context)
             throws JsonParseException {

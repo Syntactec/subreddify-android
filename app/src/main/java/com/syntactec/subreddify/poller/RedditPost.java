@@ -1,4 +1,4 @@
-package com.syntactec.subreddify.rest;
+package com.syntactec.subreddify.poller;
 
 /**
  * This class models a Reddit post object.
@@ -51,7 +51,7 @@ public class RedditPost {
      * <p/>
      * The name is the unique identifier for the post, useful when specifying "before" or "after" in the request.
      *
-     * @return
+     * @return the name of the post
      */
     public String getName() {
         return name;

@@ -14,18 +14,13 @@ import android.preference.*;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.syntactec.subreddify.rest.*;
+import com.syntactec.subreddify.poller.DaggerPoller;
+import com.syntactec.subreddify.poller.Poller;
+import com.syntactec.subreddify.poller.RedditPost;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -91,7 +86,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return true;
         }
     };
-
     /**
      * Helper method to determine if the device has an extra-large screen. For
      * example, 10" tablets are extra-large.
@@ -222,9 +216,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class DataSyncPreferenceFragment extends PreferenceFragment {
+        Poller poller;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
+            // FIXME should be injected at the application level into each activity
+            poller = DaggerPoller.create();
+
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
@@ -238,23 +238,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Type redditPostListType = new TypeToken<List<RedditPost>>() {
-                    }.getType();
-                    Type redditCommentListType = new TypeToken<List<RedditComment>>() {
-                    }.getType();
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(redditPostListType, new RedditPostsDeserializer())
-                            .registerTypeAdapter(redditCommentListType, new RedditCommentsDeserializer())
-                            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                            .create();
-
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl("https://www.reddit.com/")
-                            .addConverterFactory(GsonConverterFactory.create(gson))
-                            .build();
-
-                    RedditService service = retrofit.create(RedditService.class);
-                    Call<List<RedditPost>> call = service.getPostsNewerThan("ceinwenvale", "t3_5okap2");
+                    Call<List<RedditPost>> call = poller.getRedditService().getPostsNewerThan("ceinwenvale", "t3_5okap2");
                     call.enqueue(new Callback<List<RedditPost>>() {
                         @Override
                         public void onResponse(Call<List<RedditPost>> call, Response<List<RedditPost>> response) {
