@@ -1,4 +1,4 @@
-package com.syntactec.subreddify.poller;
+package com.syntactec.subreddify.services;
 
 /**
  * This class models a Reddit post object.

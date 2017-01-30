@@ -1,9 +1,9 @@
-package com.syntactec.subreddify.poller;
+package com.syntactec.subreddify.services;
 
 /**
  * This class models a Reddit post object.
  */
-class RedditComment {
+public class RedditComment {
     private String author;
     private boolean over18;
     private String body;
