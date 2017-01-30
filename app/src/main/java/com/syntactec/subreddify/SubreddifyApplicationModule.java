@@ -1,29 +1,43 @@
-package com.syntactec.subreddify.poller;
+package com.syntactec.subreddify;
 
+import android.app.Application;
+import android.content.Context;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.syntactec.subreddify.services.*;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import javax.inject.Singleton;
 import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Defines providers for creating objects involved with making Reddit REST API requests.
+ * A module for Android-specific dependencies which require a {@link Context} or {@link Application} to create.
  */
 @Module
-class PollerModule {
+public class SubreddifyApplicationModule {
+    private final Application application;
+
+    public SubreddifyApplicationModule(Application application) {
+        this.application = application;
+    }
 
     @Provides
-    static RedditService provideRedditService() {
-        Type redditPostListType = new TypeToken<List<RedditPost>>() {
-        }.getType();
-        Type redditCommentListType = new TypeToken<List<RedditComment>>() {
-        }.getType();
+    @Singleton
+    public Application application() {
+        return application;
+    }
+
+    @Provides
+    @Singleton
+    public RedditService provideRedditService() {
+        Type redditPostListType = new TypeToken<List<RedditPost>>() {}.getType();
+        Type redditCommentListType = new TypeToken<List<RedditComment>>() {}.getType();
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(redditPostListType, new RedditPostsDeserializer())
