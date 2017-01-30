@@ -59,5 +59,6 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
 
-    <string name="sync">Sync</string>
+    <string name="pref_title_sync">Sync</string>
+    <string name="pref_title_choose_subreddits">Choose Subreddits</string>
 </resources>

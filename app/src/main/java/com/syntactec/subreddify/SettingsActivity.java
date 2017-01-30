@@ -226,15 +226,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
+            bindPreferenceSummaryToValue(findPreference("choose_subreddits"));
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 
-            Preference button = findPreference(getString(R.string.sync));
+            Preference button = findPreference("sync");
             button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    // FIXME this should be injected, but would require a redesign to get DI to work correctlyk
+                    TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
+                    splitter.setString(findPreference("choose_subreddits").getSummary().toString());
+
+                    String subredditQuery = "";
+                    for (String subreddit : splitter) {
+                        subredditQuery += subreddit;
+                        if (splitter.hasNext()) {
+                            subredditQuery += "+";
+                        }
+                    }
+
+                    // FIXME this should be injected, but would require a redesign to get DI to work correctly
                     RedditService service = ((SubreddifyApplication) getActivity().getApplication()).getRedditService();
-                    Call<List<RedditPost>> call = service.getPostsNewerThan("ceinwenvale", "t3_5okap2");
+                    Call<List<RedditPost>> call = service.getPostsNewerThan(subredditQuery, "");
                     call.enqueue(new Callback<List<RedditPost>>() {
                         @Override
                         public void onResponse(Call<List<RedditPost>> call, Response<List<RedditPost>> response) {
