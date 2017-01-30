@@ -14,9 +14,8 @@ import android.preference.*;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import com.syntactec.subreddify.poller.DaggerPoller;
-import com.syntactec.subreddify.poller.Poller;
-import com.syntactec.subreddify.poller.RedditPost;
+import com.syntactec.subreddify.services.RedditPost;
+import com.syntactec.subreddify.services.RedditService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -216,14 +215,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        Poller poller;
-
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
-            // FIXME should be injected at the application level into each activity
-            poller = DaggerPoller.create();
 
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
@@ -238,7 +232,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Call<List<RedditPost>> call = poller.getRedditService().getPostsNewerThan("ceinwenvale", "t3_5okap2");
+                    // FIXME this should be injected, but would require a redesign to get DI to work correctlyk
+                    RedditService service = ((SubreddifyApplication) getActivity().getApplication()).getRedditService();
+                    Call<List<RedditPost>> call = service.getPostsNewerThan("ceinwenvale", "t3_5okap2");
                     call.enqueue(new Callback<List<RedditPost>>() {
                         @Override
                         public void onResponse(Call<List<RedditPost>> call, Response<List<RedditPost>> response) {
