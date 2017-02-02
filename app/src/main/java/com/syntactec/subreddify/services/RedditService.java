@@ -1,4 +1,4 @@
-package com.syntactec.subreddify.rest;
+package com.syntactec.subreddify.services;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

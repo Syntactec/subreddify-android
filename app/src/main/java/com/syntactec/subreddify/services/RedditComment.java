@@ -1,13 +1,12 @@
-package com.syntactec.subreddify.rest;
+package com.syntactec.subreddify.services;
 
 /**
  * This class models a Reddit post object.
  */
-public class RedditPost {
+public class RedditComment {
     private String author;
     private boolean over18;
-    private String title;
-    private String selfText;
+    private String body;
     private String name;
 
     /**
@@ -29,29 +28,21 @@ public class RedditPost {
     }
 
     /**
-     * Gets the title of the post.
+     * Gets the body of the comment.
      *
-     * @return the post title
+     * @return the text content of the comment.
      */
-    public String getTitle() {
-        return title;
+    public String getBody() {
+        return body;
     }
 
     /**
-     * Gets the text for the post, if any.
-     *
-     * @return the text of the post, or an empty string if the post was a link
-     */
-    public String getSelfText() {
-        return selfText;
-    }
-
-    /**
-     * Gets the name of the post.
+     * Gets the name of the comment.
      * <p/>
-     * The name is the unique identifier for the post, useful when specifying "before" or "after" in the request.
+     * This name is the unique identifier of the comment, useful for specifying things like "before" or "after" when
+     * making calls to the API.
      *
-     * @return
+     * @return the name of the comment
      */
     public String getName() {
         return name;
