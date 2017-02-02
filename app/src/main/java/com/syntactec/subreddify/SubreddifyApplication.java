@@ -1,7 +1,7 @@
 package com.syntactec.subreddify;
 
 import android.app.Application;
-import com.syntactec.subreddify.services.RedditService;
+import com.syntactec.subreddify.resources.RedditResource;
 
 import javax.inject.Inject;
 
@@ -10,7 +10,7 @@ import javax.inject.Inject;
  */
 public class SubreddifyApplication extends Application {
     @Inject
-    RedditService service;
+    RedditResource service;
 
     @Override
     public void onCreate() {
@@ -23,7 +23,7 @@ public class SubreddifyApplication extends Application {
         applicationComponent.inject(this);
     }
 
-    public RedditService getRedditService() {
+    public RedditResource getRedditResource() {
         return service;
     }
 }

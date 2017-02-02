@@ -6,7 +6,9 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.syntactec.subreddify.services.*;
+import com.syntactec.subreddify.resources.RedditPost;
+import com.syntactec.subreddify.resources.RedditPostsDeserializer;
+import com.syntactec.subreddify.resources.RedditResource;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -35,13 +37,11 @@ public class SubreddifyApplicationModule {
 
     @Provides
     @Singleton
-    public RedditService provideRedditService() {
+    public RedditResource provideRedditResource() {
         Type redditPostListType = new TypeToken<List<RedditPost>>() {}.getType();
-        Type redditCommentListType = new TypeToken<List<RedditComment>>() {}.getType();
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(redditPostListType, new RedditPostsDeserializer())
-                .registerTypeAdapter(redditCommentListType, new RedditCommentsDeserializer())
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
 
@@ -50,6 +50,6 @@ public class SubreddifyApplicationModule {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        return retrofit.create(RedditService.class);
+        return retrofit.create(RedditResource.class);
     }
 }
