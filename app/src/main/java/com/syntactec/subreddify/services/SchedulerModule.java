@@ -1,7 +1,6 @@
 package com.syntactec.subreddify.services;
 
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
@@ -12,20 +11,16 @@ import javax.inject.Singleton;
  * A module for Android-specific dependencies which require a {@link Context} or {@link Application} to create.
  */
 @Module
-public class SyncModule {
-    private final SyncService syncService;
+public class SchedulerModule {
+    private final SchedulerService schedulerService;
 
-    public SyncModule(SyncService syncService) {
-        this.syncService = syncService;
+    public SchedulerModule(SchedulerService schedulerService) {
+        this.schedulerService = schedulerService;
     }
 
     @Provides
     @Singleton
-    public SyncService syncService() {
-        return syncService;
-    }
-
-    @Provides
-    public PendingIntent syncIntent() {
+    public SchedulerService schedulerService() {
+        return schedulerService;
     }
 }

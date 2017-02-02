@@ -8,9 +8,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
 /**
- * This class defines a service which will query the RedditResource object however often the user specifies.
+ * This class defines a service which will schedule the notification service to run at the user defined interval.
  */
-public class SyncService extends Service {
+public class SchedulerService extends Service {
     private SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
     private int defaultSyncMinutes = 15;
     private int syncMillis = 60000 * preferences.getInt("sync_frequency", defaultSyncMinutes);
