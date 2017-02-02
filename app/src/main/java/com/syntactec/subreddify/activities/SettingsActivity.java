@@ -2,6 +2,7 @@ package com.syntactec.subreddify.activities;
 
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -12,15 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.*;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import com.syntactec.subreddify.R;
-import com.syntactec.subreddify.SubreddifyApplication;
-import com.syntactec.subreddify.resources.RedditPost;
-import com.syntactec.subreddify.resources.RedditResource;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.syntactec.subreddify.services.PollerService;
 
 import java.util.List;
 
@@ -203,35 +198,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
-                    splitter.setString(findPreference("choose_subreddits").getSummary().toString());
-
-                    String subredditQuery = "";
-                    for (String subreddit : splitter) {
-                        subredditQuery += subreddit;
-                        if (splitter.hasNext()) {
-                            subredditQuery += "+";
-                        }
-                    }
-
-                    // FIXME this should be injected, but would require a redesign to get DI to work correctly
-                    RedditResource service = ((SubreddifyApplication) getActivity().getApplication()).getRedditResource();
-                    Call<List<RedditPost>> call = service.getPostsNewerThan(subredditQuery, "");
-                    call.enqueue(new Callback<List<RedditPost>>() {
-                        @Override
-                        public void onResponse(Call<List<RedditPost>> call, Response<List<RedditPost>> response) {
-                            if (response.isSuccessful()) {
-                                for (RedditPost post : response.body()) {
-                                    Log.d("REST", post.getTitle());
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<RedditPost>> call, Throwable t) {
-                            Log.d("Error", t.getMessage());
-                        }
-                    });
+                    Activity activity = getActivity();
+                    Intent serviceIntent = new Intent(activity, PollerService.class);
+                    activity.startService(serviceIntent);
 
                     return true;
                 }
