@@ -1,4 +1,4 @@
-package com.syntactec.subreddify;
+package com.syntactec.subreddify.activities;
 
 
 import android.annotation.TargetApi;
@@ -14,8 +14,10 @@ import android.preference.*;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import com.syntactec.subreddify.services.RedditPost;
-import com.syntactec.subreddify.services.RedditService;
+import com.syntactec.subreddify.R;
+import com.syntactec.subreddify.SubreddifyApplication;
+import com.syntactec.subreddify.resources.RedditPost;
+import com.syntactec.subreddify.resources.RedditResource;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -213,7 +215,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
 
                     // FIXME this should be injected, but would require a redesign to get DI to work correctly
-                    RedditService service = ((SubreddifyApplication) getActivity().getApplication()).getRedditService();
+                    RedditResource service = ((SubreddifyApplication) getActivity().getApplication()).getRedditResource();
                     Call<List<RedditPost>> call = service.getPostsNewerThan(subredditQuery, "");
                     call.enqueue(new Callback<List<RedditPost>>() {
                         @Override

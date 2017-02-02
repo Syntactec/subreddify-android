@@ -1,4 +1,4 @@
-package com.syntactec.subreddify;
+package com.syntactec.subreddify.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
