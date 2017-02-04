@@ -14,10 +14,17 @@ import android.util.Log;
  */
 public class SchedulerService extends IntentService {
 
-    private final AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+    private AlarmManager alarmManager;
 
     public SchedulerService() {
         super("SchedulerService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
     }
 
     @Override
