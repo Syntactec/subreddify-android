@@ -1,10 +1,8 @@
 package com.syntactec.subreddify.services;
 
-import android.app.Service;
+import android.app.IntentService;
 import android.content.Intent;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import com.syntactec.subreddify.resources.RedditPost;
 import com.syntactec.subreddify.resources.RedditResource;
@@ -18,9 +16,18 @@ import java.util.List;
 /**
  * This class defines a service which will schedule the notification service to run at the user defined interval.
  */
-public class PollerService extends Service {
+public class PollerService extends IntentService {
     @Inject
     RedditResource redditResource;
+
+    /**
+     * Creates an IntentService.  Invoked by your subclass's constructor.
+     *
+     * @param name Used to name the worker thread, important only for debugging.
+     */
+    public PollerService(String name) {
+        super(name);
+    }
 
     @Override
     public void onCreate() {
@@ -34,7 +41,7 @@ public class PollerService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    protected void onHandleIntent(Intent intent) {
         String subredditQueryString = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("choose_subreddits", "")
                 .replaceAll(",", "+");
@@ -55,13 +62,5 @@ public class PollerService extends Service {
                 Log.d("Error", t.getMessage());
             }
         });
-
-        return START_STICKY;
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }
