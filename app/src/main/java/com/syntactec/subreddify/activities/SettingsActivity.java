@@ -194,12 +194,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             chooseSubredditsPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String stringValue = newValue.toString();
-
-                    ListPreference listPreference = (ListPreference) preference;
-                    int index = listPreference.findIndexOfValue(stringValue);
-
-                    preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+                    preference.setSummary(newValue.toString());
 
                     Activity activity = getActivity();
                     Intent serviceIntent = new Intent(activity, SchedulerService.class);
@@ -213,7 +208,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             syncFrequencyPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    preference.setSummary(newValue.toString());
+                    String stringValue = newValue.toString();
+
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(stringValue);
+
+                    preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
 
                     Activity activity = getActivity();
                     Intent serviceIntent = new Intent(activity, SchedulerService.class);
