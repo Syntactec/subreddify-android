@@ -14,12 +14,21 @@ import android.util.Log;
  */
 public class SchedulerService extends IntentService {
 
+    private final AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
     public SchedulerService() {
         super("SchedulerService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Intent serviceIntent = new Intent(this, PollerService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Log.d("SchedulerService", "Canceling the active alarm.");
+        alarmManager.cancel(pendingIntent);
+
         String sync_frequency = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("sync_frequency", "-1");
 
@@ -29,15 +38,11 @@ public class SchedulerService extends IntentService {
 
         int syncMillis = 60000 * Integer.parseInt(sync_frequency);
 
-        Intent serviceIntent = new Intent(this, PollerService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-
         Log.d("SchedulerService", "Creating alarm manager: Preference is " + syncMillis);
-        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime(),
                 syncMillis,
                 pendingIntent);
+
     }
 }
