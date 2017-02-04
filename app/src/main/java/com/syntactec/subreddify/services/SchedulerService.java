@@ -14,13 +14,8 @@ import android.util.Log;
  */
 public class SchedulerService extends IntentService {
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public SchedulerService(String name) {
-        super(name);
+    public SchedulerService() {
+        super("SchedulerService");
     }
 
     @Override

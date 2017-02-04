@@ -20,13 +20,8 @@ public class PollerService extends IntentService {
     @Inject
     RedditResource redditResource;
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public PollerService(String name) {
-        super(name);
+    public PollerService() {
+        super("PollerService");
     }
 
     @Override
