@@ -20,12 +20,14 @@ public class SchedulerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        int syncMillis = 60000 * PreferenceManager.getDefaultSharedPreferences(this)
-                .getInt("sync_frequency", -1);
+        String sync_frequency = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("sync_frequency", "-1");
 
-        if (syncMillis == -1) {
+        if (sync_frequency.equals("-1")) {
             return;
         }
+
+        int syncMillis = 60000 * Integer.parseInt(sync_frequency);
 
         Intent serviceIntent = new Intent(this, PollerService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent,
