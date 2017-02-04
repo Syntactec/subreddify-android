@@ -1,4 +1,4 @@
-package com.syntactec.subreddify.services;
+package com.syntactec.subreddify.resources;
 
 import com.google.gson.*;
 

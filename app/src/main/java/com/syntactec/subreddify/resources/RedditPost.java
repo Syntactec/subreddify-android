@@ -1,4 +1,4 @@
-package com.syntactec.subreddify.services;
+package com.syntactec.subreddify.resources;
 
 /**
  * This class models a Reddit post object.

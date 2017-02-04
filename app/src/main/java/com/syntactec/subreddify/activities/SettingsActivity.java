@@ -1,7 +1,8 @@
-package com.syntactec.subreddify;
+package com.syntactec.subreddify.activities;
 
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -12,13 +13,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.*;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
-import com.syntactec.subreddify.services.RedditPost;
-import com.syntactec.subreddify.services.RedditService;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.syntactec.subreddify.R;
+import com.syntactec.subreddify.services.PollerService;
+import com.syntactec.subreddify.services.SchedulerService;
 
 import java.util.List;
 
@@ -85,6 +83,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return true;
         }
     };
+
     /**
      * Helper method to determine if the device has an extra-large screen. For
      * example, 10" tablets are extra-large.
@@ -190,46 +189,47 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("choose_subreddits"));
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            Preference chooseSubredditsPreference = findPreference("choose_subreddits");
+
+            chooseSubredditsPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    preference.setSummary(newValue.toString());
+
+                    Activity activity = getActivity();
+                    Intent serviceIntent = new Intent(activity, SchedulerService.class);
+                    activity.startService(serviceIntent);
+
+                    return true;
+                }
+            });
+
+            Preference syncFrequencyPreference = findPreference("sync_frequency");
+            syncFrequencyPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String stringValue = newValue.toString();
+
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(stringValue);
+
+                    preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+
+                    Activity activity = getActivity();
+                    Intent serviceIntent = new Intent(activity, SchedulerService.class);
+                    activity.startService(serviceIntent);
+
+                    return true;
+                }
+            });
 
             Preference button = findPreference("sync");
             button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
-                    splitter.setString(findPreference("choose_subreddits").getSummary().toString());
-
-                    String subredditQuery = "";
-                    for (String subreddit : splitter) {
-                        subredditQuery += subreddit;
-                        if (splitter.hasNext()) {
-                            subredditQuery += "+";
-                        }
-                    }
-
-                    // FIXME this should be injected, but would require a redesign to get DI to work correctly
-                    RedditService service = ((SubreddifyApplication) getActivity().getApplication()).getRedditService();
-                    Call<List<RedditPost>> call = service.getPostsNewerThan(subredditQuery, "");
-                    call.enqueue(new Callback<List<RedditPost>>() {
-                        @Override
-                        public void onResponse(Call<List<RedditPost>> call, Response<List<RedditPost>> response) {
-                            if (response.isSuccessful()) {
-                                for (RedditPost post : response.body()) {
-                                    Log.d("REST", post.getTitle());
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<RedditPost>> call, Throwable t) {
-                            Log.d("Error", t.getMessage());
-                        }
-                    });
+                    Activity activity = getActivity();
+                    Intent serviceIntent = new Intent(activity, PollerService.class);
+                    activity.startService(serviceIntent);
 
                     return true;
                 }
