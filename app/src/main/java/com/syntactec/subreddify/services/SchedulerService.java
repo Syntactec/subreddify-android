@@ -43,6 +43,5 @@ public class SchedulerService extends IntentService {
                 SystemClock.elapsedRealtime(),
                 syncMillis,
                 pendingIntent);
-
     }
 }
