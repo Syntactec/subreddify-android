@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import com.syntactec.subreddify.R;
 import com.syntactec.subreddify.services.PollerService;
+import com.syntactec.subreddify.services.SchedulerService;
 
 import java.util.List;
 
@@ -82,6 +83,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return true;
         }
     };
+
     /**
      * Helper method to determine if the device has an extra-large screen. For
      * example, 10" tablets are extra-large.
@@ -187,12 +189,39 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("choose_subreddits"));
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            Preference chooseSubredditsPreference = findPreference("choose_subreddits");
+
+            chooseSubredditsPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String stringValue = newValue.toString();
+
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(stringValue);
+
+                    preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+
+                    Activity activity = getActivity();
+                    Intent serviceIntent = new Intent(activity, SchedulerService.class);
+                    activity.startService(serviceIntent);
+
+                    return true;
+                }
+            });
+
+            Preference syncFrequencyPreference = findPreference("sync_frequency");
+            syncFrequencyPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    preference.setSummary(newValue.toString());
+
+                    Activity activity = getActivity();
+                    Intent serviceIntent = new Intent(activity, SchedulerService.class);
+                    activity.startService(serviceIntent);
+
+                    return true;
+                }
+            });
 
             Preference button = findPreference("sync");
             button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
