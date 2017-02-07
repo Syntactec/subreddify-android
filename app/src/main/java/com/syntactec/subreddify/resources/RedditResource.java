@@ -11,6 +11,6 @@ import java.util.List;
  * This class models the Reddit resources the application uses.
  */
 public interface RedditResource {
-    @GET("r/{subreddit}/new.json?count=3")
-    Call<List<RedditPost>> getPostsNewerThan(@Path("subreddit") String subreddit, @Query("before") String postName);
+    @GET("r/{subredditQuery}/new.json?limit=3")
+    Call<List<RedditPost>> getPostsNewerThan(@Path("subredditQuery") String subredditQuery, @Query("before") String postName);
 }
