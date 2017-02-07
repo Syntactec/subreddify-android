@@ -9,6 +9,7 @@ public class RedditPost {
     private String title;
     private String selfText;
     private String name;
+    private String subreddit;
 
     /**
      * Gets the author of the post.
@@ -55,5 +56,14 @@ public class RedditPost {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets the name of the subreddit the post belongs to.
+     *
+     * @return the name of the subreddit the post was made in
+     */
+    public String getSubreddit() {
+        return subreddit;
     }
 }
