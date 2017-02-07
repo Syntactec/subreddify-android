@@ -2,6 +2,7 @@ package com.syntactec.subreddify.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.syntactec.subreddify.resources.RedditPost;
@@ -37,17 +38,34 @@ public class PollerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String subredditQueryString = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString("choose_subreddits", "")
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String subredditQueryString = sharedPreferences.getString("choose_subreddits", "")
                 .replaceAll(",", "+");
 
-        Call<List<RedditPost>> request = redditResource.getPostsNewerThan(subredditQueryString, "");
+        if (subredditQueryString.isEmpty()) {
+            return;
+        }
+
+        String lastPostName = sharedPreferences.getString("last_post_name", "");
+
+        Call<List<RedditPost>> request = redditResource.getPostsNewerThan(subredditQueryString, lastPostName);
         request.enqueue(new Callback<List<RedditPost>>() {
             @Override
             public void onResponse(Call<List<RedditPost>> call, Response<List<RedditPost>> response) {
                 if (response.isSuccessful()) {
-                    for (RedditPost post : response.body()) {
+                    List<RedditPost> posts = response.body();
+
+                    if (posts.isEmpty()) {
+                        return;
+                    }
+
+                    RedditPost firstPost = posts.get(0);
+                    sharedPreferences.edit().putString("last_post_name", firstPost.getName()).apply();
+
+                    for (RedditPost post : posts) {
                         Log.d("REST", post.getTitle());
+
                     }
                 }
             }
