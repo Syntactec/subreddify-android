@@ -54,20 +54,19 @@ public class PollerService extends IntentService {
             return;
         }
 
-        String lastPostName = sharedPreferences.getString("last_post_name", "");
-
-        Call<List<RedditPost>> request = redditResource.getPostsNewerThan(subredditQueryString, lastPostName);
+        Call<List<RedditPost>> request = redditResource.getNewestPosts(subredditQueryString);
         request.enqueue(new Callback<List<RedditPost>>() {
             @Override
             public void onResponse(Call<List<RedditPost>> call, Response<List<RedditPost>> response) {
                 if (response.isSuccessful()) {
                     List<RedditPost> posts = response.body();
 
-                    if (posts.isEmpty()) {
+                    RedditPost firstPost = posts.get(0);
+
+                    if (firstPost.getName().equals(sharedPreferences.getString("last_post_name", ""))) {
                         return;
                     }
 
-                    RedditPost firstPost = posts.get(0);
                     sharedPreferences.edit().putString("last_post_name", firstPost.getName()).apply();
 
                     Set<String> subreddits = new HashSet<>();
